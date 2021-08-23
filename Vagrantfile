@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
         service apache2 reload
      SHELL
   end
-
+ 
   config.vm.define "dbserver" do |dbserver|
      dbserver.vm.hostname = "dbserver"
      dbserver.vm.network "private_network", ip: "192.168.2.12"
