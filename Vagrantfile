@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y apache2
+    apt-get install -y apache2 php libapache2-mod-php 
   
 # Change VM's webserver's configuration to use shared folder.
     # (Look inside test-website.conf for specifics.)
