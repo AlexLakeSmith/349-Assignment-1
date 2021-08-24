@@ -14,21 +14,21 @@ Vagrant.configure("2") do |config|
      
 
 # The name of my web server. 
-  webserver.vm.hostname = "fwebserver"
+  fwebserver.vm.hostname = "fwebserver"
 
 
 # Portforwarding. 
 # This means the host can connect to IP address 127.0.0.1 port 8080, 
 #  and that network request will reach our webserver VM's port 80.
-     webserver.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+     fwebserver.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
 
 # Set up a private network IP. This will allow VMs to communicate.
-     webserver.vm.network "private_network", ip: "192.168.2.11"
+     fwebserver.vm.network "private_network", ip: "192.168.2.11"
 
             
 # Sets up permissions for CS labs to access. 
-    webserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
+    fwebserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
 
 # Do I need this??? 
 # Change VM's webserver's configuration to use shared folder.
@@ -48,21 +48,21 @@ end
      
 
 # The name of my web server. 
-  webserver.vm.hostname = "bwebserver"
+  bwebserver.vm.hostname = "bwebserver"
 
 
 # Portforwarding. 
 # This means the host can connect to IP address 127.0.0.1 port 8080, 
 #  and that network request will reach our webserver VM's port 80.
-     webserver.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
+     bwebserver.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
 
 
 # Set up a private network IP. This will allow VMs to communicate.
-     webserver.vm.network "private_network", ip: "192.168.2.12"
+     bwebserver.vm.network "private_network", ip: "192.168.2.12"
 
             
 # Sets up permissions for CS labs to access. 
-    webserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]    
+    bwebserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]    
 end
 
 
