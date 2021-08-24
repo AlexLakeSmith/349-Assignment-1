@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# A Vagrantfile to set up two VMs, a webserver and a database server.
+# A Vagrantfile to set up three VMs, two webservers and a database server.
 Vagrant.configure("2") do |config|
 
 
@@ -9,12 +9,12 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/xenial64"
 
 
-# This sets up a VM for hosting my web server.
-  config.vm.define "webserver" do |webserver|
+# This sets up a VM for hosting my front end web server.
+  config.vm.define "fwebserver" do |fwebserver|
      
 
 # The name of my web server. 
-  webserver.vm.hostname = "webserver"
+  webserver.vm.hostname = "fwebserver"
 
 
 # Portforwarding. 
@@ -30,22 +30,40 @@ Vagrant.configure("2") do |config|
 # Sets up permissions for CS labs to access. 
     webserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
 
-        
 # Do I need this??? 
 # Change VM's webserver's configuration to use shared folder.
         # (Look inside test-website.conf for specifics.)
-        cp /vagrant/test-website.conf /etc/apache2/sites-available/
+        #cp /vagrant/test-website.conf /etc/apache2/sites-available/
         # install our website configuration and disable the default
-        a2ensite test-website
-        a2dissite 000-default
-        service apache2 reload
-     SHELL
-  end
+        #a2ensite test-website
+        #a2dissite 000-default
+        #service apache2 reload
+    #SHELL
+end
  
 
 
-# Create ANOTHER WEB SERVER!!!
+# This sets up a VM for hosting my back end web server.
+  config.vm.define "bwebserver" do |bwebserver|
+     
 
+# The name of my web server. 
+  webserver.vm.hostname = "bwebserver"
+
+
+# Portforwarding. 
+# This means the host can connect to IP address 127.0.0.1 port 8080, 
+#  and that network request will reach our webserver VM's port 80.
+     webserver.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
+
+
+# Set up a private network IP. This will allow VMs to communicate.
+     webserver.vm.network "private_network", ip: "192.168.2.12"
+
+            
+# Sets up permissions for CS labs to access. 
+    webserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]    
+end
 
 
 
