@@ -1,34 +1,37 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# A Vagrantfile to set up two VMs, a webserver and a database server,
-# connected together using an internal network with manually-assigned
-# IP addresses for the VMs.
+# A Vagrantfile to set up two VMs, a webserver and a database server.
 Vagrant.configure("2") do |config|
 
-# (We have used this box previously, so reusing it here should save a
-  # bit of time by using a cached copy.)
+
+# My servers will run Ubuntu software as I have been using it in the labs so far.
   config.vm.box = "ubuntu/xenial64"
 
-# This is a form of configuration not seen earlier in our use of
-  # Vagrant: it defines a particular named VM, which is necessary when
-  # your Vagrantfile will start up multiple interconnected VMs.
-  config.vm.define "webserver" do |webserver|
-     webserver.vm.hostname = "webserver"
 
-# This means that our host computer can
-    # connect to IP address 127.0.0.1 port 8080, and that network
-    # request will reach our webserver VM's port 80.
+# This sets up a VM for hosting my web server.
+  config.vm.define "webserver" do |webserver|
+     
+
+# The name of my web server. 
+  webserver.vm.hostname = "webserver"
+
+
+# Portforwarding. 
+# This means the host can connect to IP address 127.0.0.1 port 8080, 
+#  and that network request will reach our webserver VM's port 80.
      webserver.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
-# Set up a private network that our VMs will use to communicate
-    # with each other.
+
+# Set up a private network IP. This will allow VMs to communicate.
      webserver.vm.network "private_network", ip: "192.168.2.11"
+
             
 # Sets up permissions for CS labs to access. 
     webserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
-        
 
+        
+# Do I need this??? 
 # Change VM's webserver's configuration to use shared folder.
         # (Look inside test-website.conf for specifics.)
         cp /vagrant/test-website.conf /etc/apache2/sites-available/
@@ -39,8 +42,23 @@ Vagrant.configure("2") do |config|
      SHELL
   end
  
+
+
+# Create ANOTHER WEB SERVER!!!
+
+
+
+
+
+
+
+# Setup VM for hosting database. Should be able to connect my 2 web servers. 
   config.vm.define "dbserver" do |dbserver|
+     
+# The name of my database server.
      dbserver.vm.hostname = "dbserver"
+
+# Assigns private network IP.
      dbserver.vm.network "private_network", ip: "192.168.2.12"
   
 # Sets up permissions for CS labs to access. 
