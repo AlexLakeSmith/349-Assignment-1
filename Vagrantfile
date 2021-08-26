@@ -44,7 +44,7 @@ end
     
 # The name of my web server. 
   bwebserver.vm.hostname = "bwebserver"
-
+ 
 # Portforwarding. 
 # This means the host can connect to IP address 127.0.0.1 port 8080, 
 #  and that network request will reach our webserver VM's port 80.
