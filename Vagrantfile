@@ -30,15 +30,18 @@ Vagrant.configure("2") do |config|
 # Sets up permissions for CS labs to access. 
     fwebserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
 
-# Do I need this??? 
-# Change VM's webserver's configuration to use shared folder.
+
+     fwebserver.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2 php libapache2-mod-php php-mysql
+      # Change VM's webserver's configuration to use shared folder.
         # (Look inside test-website.conf for specifics.)
-        #cp /vagrant/test-website.conf /etc/apache2/sites-available/
+      cp /vagrant/test-website.conf /etc/apache2/sites-available/
         # install our website configuration and disable the default
-        #a2ensite test-website
-        #a2dissite 000-default
-        #service apache2 reload
-    #SHELL
+      a2ensite test-website
+      a2dissite 000-default
+      service apache2 reload
+    SHELL
 end
  
 
@@ -77,11 +80,10 @@ end
      dbserver.vm.hostname = "dbserver"
 
 # Assigns private network IP.
-     dbserver.vm.network "private_network", ip: "192.168.2.12"
+     dbserver.vm.network "private_network", ip: "192.168.2.13"
   
 # Sets up permissions for CS labs to access. 
      dbserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
-
 
 # Now we have a section specifying the shell commands to provision
     # the webserver VM. Note that the file test-website.conf is copied
@@ -90,59 +92,45 @@ end
      dbserver.vm.provision "shell", inline: <<-SHELL
       
 # Update Ubuntu software packages.
-	apt-get update
-      
-      # We create a shell variable MYSQL_PWD that contains the MySQL root password
-       export MYSQL_PWD='insecure_mysqlroot_pw'
+	 apt-get update
 
-# If you run the `apt-get install mysql-server` command
-      # manually, it will prompt you to enter a MySQL root
-      # password. The next two lines set up answers to the questions
-      # the package installer would otherwise ask ahead of it asking,
-      # so our automated provisioning script does not get stopped by
-      # the software package management system attempting to ask the
-      # user for configuration information.
-       echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set-selections 
-       echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
-       
 # Install the MySQL database server.
-       apt-get -y install mysql-server
+     apt-get -y install mysql-server
 
+# We create a shell variable MYSQL_PWD that contains the MySQL root password
+     export MYSQL_PWD='insecure_mysqlroot_pw'
 
+# Give the password to the installer so that we don't get asked for password.
+     echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set-selections 
+     echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
+       
 # Run some setup commands to get the database ready to use.
       # First create a database.       
-echo "CREATE DATABASE fvision;" | mysql
+     echo "CREATE DATABASE testdb;" | mysql
        
-
-# Then create a database user "webuser" with the given password.
-echo "CREATE USER 'webuser'@'%' IDENTIFIED BY 'insecure_db_pw';" | mysql
+# Then create a database user "admin" with the given password.
+     echo "CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';" | mysql
    
-    
-# Grant all permissions to the database user "webuser" regarding
-      # the "fvision" database that we just created, above.
-echo "GRANT ALL PRIVILEGES ON fvision.* TO 'webuser'@'%'" | mysql      
-  
-     
+# Grant all permissions to the database user "admin" regarding
+      # the "testdb" database that we just created, above.
+     echo "GRANT ALL PRIVILEGES ON testdb.* TO 'admin'@'%'" | mysql      
+       
 # Set the MYSQL_PWD shell variable that the mysql command will
       # try to use as the database password ...
-export MYSQL_PWD='insecure_db_pw'
-       
+     export MYSQL_PWD='admin'       
 
 # ... and run all of the SQL within the setup-database.sql file,
       # which is part of the repository containing this Vagrantfile, so you
       # can look at the file on your host.
-cat /vagrant/setup-database.sql | mysql -u webuser fvision
-
+     cat /vagrant/setup-database.sql | mysql -u admin testdb
        
 # By default, MySQL only listens for local network requests,
       # i.e., that originate from within the dbserver VM. We need to
       # change this so that the webserver VM can connect to the
       # database on the dbserver VM.
-sed -i'' -e '/bind-address/s/127.0.0.1/0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
-       
+     sed -i'' -e '/bind-address/s/127.0.0.1/0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf       
 
-# We then restart the MySQL server to ensure that it picks up
-      # our configuration changes.
+# We then restart the MySQL server to make changes.
 service mysql restart
      SHELL
   end
