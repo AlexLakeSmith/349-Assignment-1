@@ -84,38 +84,36 @@ end
      dbserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
 
 # Now we have a section specifying the shell commands to provision
-    # the webserver VM. Note that the file test-website.conf is copied
-    # from this host to the VM through the shared folder mounted in
-    # the VM at /vagrant
+    # the dbserver VM. 
      dbserver.vm.provision "shell", inline: <<-SHELL
       
 # Update Ubuntu software packages.
 	 apt-get update
-
-# Install the MySQL database server.
-     apt-get -y install mysql-server
+     #apt-get upgrade -y
 
 # We create a shell variable MYSQL_PWD that contains the MySQL root password
-     export MYSQL_PWD='insecure_mysqlroot_pw'
+     export MYSQL_PWD='password123'
 
 # Give the password to the installer so that we don't get asked for password.
      echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set-selections 
      echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
-       
+
+# Install the MySQL database server.
+     apt-get -y install mysql-server
+
 # Run some setup commands to get the database ready to use.
       # First create a database.       
      echo "CREATE DATABASE testdb;" | mysql
-       
-# Then create a database user "admin" with the given password.
-     echo "CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';" | mysql
-   
-# Grant all permissions to the database user "admin" regarding
-      # the "testdb" database that we just created, above.
+    
+# Create a database user "admin" with the given password, "admin".
+     echo "CREATE USER 'admin'@'%' IDENTIFIED BY 'password123';" | mysql
+
+# Provide all privilieges to the admin user.
      echo "GRANT ALL PRIVILEGES ON testdb.* TO 'admin'@'%'" | mysql      
        
 # Set the MYSQL_PWD shell variable that the mysql command will
       # try to use as the database password ...
-     export MYSQL_PWD='admin'       
+     export MYSQL_PWD='password123'       
 
 # ... and run all of the SQL within the setup-database.sql file,
       # which is part of the repository containing this Vagrantfile, so you
