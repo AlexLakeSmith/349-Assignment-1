@@ -1,18 +1,22 @@
-body {
-  background-color: red;
+main{
+  background-color: #cdc6c6;
+}
+
+body{
+  background-color: #cdc6c6;
 }
 
 th { 
   text-align: left; 
 }
 
-table, th, td {
-  border: 2px solid grey;
-  border-collapse: collapse;
+th, td {
+  padding: 0.3em;
 }
 
-th, td {
-  padding: 0.2em;
+table, th, td {
+  border: 4px black;
+  border-collapse: collapse;
 }
 
 h1 {

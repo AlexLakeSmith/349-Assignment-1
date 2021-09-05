@@ -2,7 +2,7 @@
 <html>
 <main>
 <head>
-  <title>Alex's Playlist Catalogue</title>
+<title>Alex's Playlist Catalogue</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
