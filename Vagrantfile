@@ -46,7 +46,7 @@ end
   bwebserver.vm.hostname = "bwebserver"
  
 # Portforwarding. 
-# This means the host can connect to IP address 127.0.0.1 port 8080, 
+# This means the host can connect to IP address 127.0.0.1 port 8081, 
 #  and that network request will reach our webserver VM's port 80.
      bwebserver.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
 
@@ -79,6 +79,9 @@ end
 
 # Assigns private network IP.
      dbserver.vm.network "private_network", ip: "192.168.2.13"
+
+# Forwarding my dbserver 
+     dbserver.vm.network "forwarded_port", guest: 80, host: 3036, host_ip: "127.0.0.1"
   
 # Sets up permissions for CS labs to access. 
      dbserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
